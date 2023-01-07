@@ -1,5 +1,7 @@
 import string
 import random
+
+from django.conf import settings
 from django.db import models
 from django.urls import reverse
 
@@ -17,9 +19,13 @@ class ShortUrl(models.Model):
         return reverse('detail', args=[str(self.short_url)])
 
     def save(self, *args, **kwargs):
-        self.short_url = ''.join(random.choice(string.ascii_letters)
-                                 for x in range(10))
+        if self.short_url == '':
+            self.short_url = ''.join(random.choice(string.ascii_letters)
+                                     for x in range(10))
         super(ShortUrl, self).save(*args, **kwargs)
 
     def get_redirect_url(self):
         return self.url
+
+    def get_path(self):
+        return settings.DOMEIN + reverse('redirect', args=[str(self.short_url)])
